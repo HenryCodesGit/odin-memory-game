@@ -6,8 +6,8 @@ export default class Deck {
     }
 
     //Asynchonously makes and returns a deck of random cards
-    static getRandomDeckAsync(asyncCardFetcher, numCards){
-        return asyncCardFetcher(numCards)
+    static getRandomDeckAsync(asyncCardFetcher, numCards, controller){
+        return asyncCardFetcher(numCards, controller)
             .then((cards) => new Deck(cards.map((card)=>new Card(card))))
     }
 
@@ -34,11 +34,5 @@ export default class Deck {
     }
 
     //Pass find to the child
-    find(cardName){
-        console.log('Attempting to find ' + cardName)
-        return this.cards.find((card) => {
-            console.log(`Current card is ${card.name}. Looking for ${cardName}`);
-            return card.name === cardName
-        });
-    }
+    find(cardName){ return this.cards.find((card) =>  card.name === cardName); }
 }

@@ -4,9 +4,16 @@ export default class Game{
 
     #deck;
     #gameOver = false;
+    #score = 0;
+    #numCards;
+    get score(){
+        return this.#score;
+    }
+    get numCards(){
+        return this.#numCards;
+    }
     constructor(numCards){
-        this.numCards = numCards;
-        this.startNewGame();
+        this.#numCards = numCards;
     }
 
     getRandomHand(){
@@ -17,27 +24,27 @@ export default class Game{
     }
 
     pickCard(cardName){
-        this.#gameOver = !(this.#deck.find(cardName).pickCard());
+        if(!this.#gameOver) this.#gameOver = !(this.#deck.find(cardName).pickCard());
+        if(this.#gameOver || ++this.#score >= this.#numCards) return this.endGame();
+        //this.#score += 1;
+       
+        //If game continues, return another hand
+        return this.getRandomHand();
     }
 
-    startNewGame(){
-        Deck.getRandomDeckAsync(asyncCardFetcher,this.numCards)
+    endGame(){
+        console.log(`Game over! Your score is ${this.#score}`);
+        return false;
+    }
+
+    startNewGameAsync(controller){
+        this.#score = 0;
+        this.#gameOver = false;
+        
+        return Deck.getRandomDeckAsync(asyncCardFetcher,this.numCards,controller)
             .then((deck) => {
                 this.#deck = deck;
+                return true;
             })
     }
-
-    //Tempory loop for now that tracks progress of the game
-    loop(){
-        if(this.#gameOver) return console.log('Game over!');
-
-        let names = [...this.getRandomHand()].map((item) => item.name)
-        console.log(names);
-        
-        let nextCard = prompt('Please select a card');
-        this.pickCard(nextCard);
-
-        this.loop()
-    }
-
 }
